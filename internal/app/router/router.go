@@ -1,12 +1,12 @@
 package router
 
 import (
-	"log"
-	"runtime/debug"
-
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 	"github.com/ozonmp/omp-bot/internal/app/commands/demo"
+	"github.com/ozonmp/omp-bot/internal/app/commands/team"
 	"github.com/ozonmp/omp-bot/internal/app/path"
+	"log"
+	"runtime/debug"
 )
 
 type Commander interface {
@@ -20,6 +20,7 @@ type Router struct {
 
 	// demoCommander
 	demoCommander Commander
+	teamCommander Commander
 	// user
 	// access
 	// buy
@@ -55,6 +56,7 @@ func NewRouter(
 		bot: bot,
 		// demoCommander
 		demoCommander: demo.NewDemoCommander(bot),
+		teamCommander: team.NewTeamInfoCommander(bot),
 		// user
 		// access
 		// buy
@@ -108,6 +110,8 @@ func (c *Router) handleCallback(callback *tgbotapi.CallbackQuery) {
 	switch callbackPath.Domain {
 	case "demo":
 		c.demoCommander.HandleCallback(callback, callbackPath)
+	case "team":
+		c.teamCommander.HandleCallback(callback, callbackPath)
 	case "user":
 		break
 	case "access":
@@ -171,6 +175,14 @@ func (c *Router) handleMessage(msg *tgbotapi.Message) {
 	}
 
 	commandPath, err := path.ParseCommand(msg.Command())
+	//if commandPath.IsSimpleCommandPath() {
+	//	switch commandPath.CommandName {
+	//	case "help":
+	//		c.demoCommander.HandleCommand(msg, commandPath)
+	//	default:
+	//		log.Printf("Router.handleCallback: unknown domain - %s", commandPath.Domain)
+	//	}
+	//}
 	if err != nil {
 		log.Printf("Router.handleCallback: error parsing callback data `%s` - %v", msg.Command(), err)
 		return
@@ -178,6 +190,10 @@ func (c *Router) handleMessage(msg *tgbotapi.Message) {
 
 	switch commandPath.Domain {
 	case "demo":
+		c.demoCommander.HandleCommand(msg, commandPath)
+	case "team":
+		c.teamCommander.HandleCommand(msg, commandPath)
+	case "help":
 		c.demoCommander.HandleCommand(msg, commandPath)
 	case "user":
 		break

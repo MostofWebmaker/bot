@@ -1,2 +1,55 @@
 #5
 make run
+
+- папка internal доступна только внутри проекта
+- имя пакета совпадает с именем папки
+
+Чтобы добавить новый модуль:
+go mod init github.com/istrel/storage
+
+Все зависимости, которые подключены, описываются в файлике go.mod
+
+//indirect - зависиомсти от подключаемого модуля
+
+go.sum - файлик, где хранятся установленные зависимости go и их версии
+
+С точки зрения Make, фальшивая цель - это просто цель, которая всегда неактуальна, поэтому всякий раз,
+когда вы спрашиваете make <phony_target> она будет запущена, независимо от состояния файловой системы.
+Некоторые распространенные make которые часто являются поддельными:
+all , install , clean , distclean , TAGS , info , check .
+
+Сборку без интернета можно использовать - vendering. Если все пакеты затянуты, то они будут лежать в папке vendor
+
+Затянуть репозиторий go get <repo_name>
+
+go get -u - можно поставить как зависимость, так и бинаркник ( -u - обновить файлик зависимостей)
+
+go get package_name@0.0.1 - затягивает конкретную версию пакета
+
+Запускаем эту команду из той папки куда нужно поставить зависимость
+
+go install - ставит только бинарник (уточнить)
+
+папка pkg - экспортируемаая наружу
+
+go mod tidy - если какие-либо зависимости не были установлены, то они ставятся
+
+https://github.com/golang-standards/project-layout - здесь описана структура папок
+
+Работы по затягиванию приватных репозитриев:
+go env -w GOPRIVATE=https://gitlab.com/yourname/gomath
+
+git config \
+  --global \
+  url."https://<yourname>:<personal access token from gitlab>@gitlab.com".insteadOf \
+  "https://gitlab.com"
+
+Bot:
+https://github.com/go-telegram-bot-api/telegram-bot-api
+
+domain = personal, team
+subdomain = info, 15
+
+
+
+
