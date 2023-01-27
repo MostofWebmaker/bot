@@ -2,6 +2,7 @@ package router
 
 import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
+	"github.com/ozonmp/omp-bot/internal/app/commands/daily"
 	"github.com/ozonmp/omp-bot/internal/app/commands/demo"
 	"github.com/ozonmp/omp-bot/internal/app/commands/team"
 	"github.com/ozonmp/omp-bot/internal/app/path"
@@ -19,8 +20,9 @@ type Router struct {
 	bot *tgbotapi.BotAPI
 
 	// demoCommander
-	demoCommander Commander
-	teamCommander Commander
+	demoCommander  Commander
+	teamCommander  Commander
+	dailyCommander Commander
 	// user
 	// access
 	// buy
@@ -55,8 +57,9 @@ func NewRouter(
 		// bot
 		bot: bot,
 		// demoCommander
-		demoCommander: demo.NewDemoCommander(bot),
-		teamCommander: team.NewTeamInfoCommander(bot),
+		demoCommander:  demo.NewDemoCommander(bot),
+		teamCommander:  team.NewTeamInfoCommander(bot),
+		dailyCommander: daily.NewDailyLinkCommander(bot),
 		// user
 		// access
 		// buy
@@ -111,6 +114,8 @@ func (c *Router) handleCallback(callback *tgbotapi.CallbackQuery) {
 	case "demo":
 		c.demoCommander.HandleCallback(callback, callbackPath)
 	case "team":
+		c.teamCommander.HandleCallback(callback, callbackPath)
+	case "daily":
 		c.teamCommander.HandleCallback(callback, callbackPath)
 	case "user":
 		break
@@ -193,6 +198,8 @@ func (c *Router) handleMessage(msg *tgbotapi.Message) {
 		c.demoCommander.HandleCommand(msg, commandPath)
 	case "team":
 		c.teamCommander.HandleCommand(msg, commandPath)
+	case "daily":
+		c.dailyCommander.HandleCommand(msg, commandPath)
 	case "help":
 		c.demoCommander.HandleCommand(msg, commandPath)
 	case "user":
