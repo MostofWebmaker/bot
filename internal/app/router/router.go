@@ -2,8 +2,10 @@ package router
 
 import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
+	"github.com/ozonmp/omp-bot/internal/app/commands/asia"
 	"github.com/ozonmp/omp-bot/internal/app/commands/daily"
 	"github.com/ozonmp/omp-bot/internal/app/commands/demo"
+	"github.com/ozonmp/omp-bot/internal/app/commands/friday"
 	"github.com/ozonmp/omp-bot/internal/app/commands/team"
 	"github.com/ozonmp/omp-bot/internal/app/path"
 	"log"
@@ -20,9 +22,11 @@ type Router struct {
 	bot *tgbotapi.BotAPI
 
 	// demoCommander
-	demoCommander  Commander
-	teamCommander  Commander
-	dailyCommander Commander
+	demoCommander   Commander
+	teamCommander   Commander
+	dailyCommander  Commander
+	fridayCommander Commander
+	asiaCommander   Commander
 	// user
 	// access
 	// buy
@@ -57,9 +61,11 @@ func NewRouter(
 		// bot
 		bot: bot,
 		// demoCommander
-		demoCommander:  demo.NewDemoCommander(bot),
-		teamCommander:  team.NewTeamInfoCommander(bot),
-		dailyCommander: daily.NewDailyLinkCommander(bot),
+		demoCommander:   demo.NewDemoCommander(bot),
+		teamCommander:   team.NewTeamInfoCommander(bot),
+		dailyCommander:  daily.NewDailyLinkCommander(bot),
+		fridayCommander: friday.NewFridayLinkCommander(bot),
+		asiaCommander:   asia.NewAsiaLinkCommander(bot),
 		// user
 		// access
 		// buy
@@ -117,6 +123,10 @@ func (c *Router) handleCallback(callback *tgbotapi.CallbackQuery) {
 		c.teamCommander.HandleCallback(callback, callbackPath)
 	case "daily":
 		c.teamCommander.HandleCallback(callback, callbackPath)
+	case "friday":
+		c.fridayCommander.HandleCallback(callback, callbackPath)
+	case "asia":
+		c.asiaCommander.HandleCallback(callback, callbackPath)
 	case "user":
 		break
 	case "access":
@@ -200,6 +210,10 @@ func (c *Router) handleMessage(msg *tgbotapi.Message) {
 		c.teamCommander.HandleCommand(msg, commandPath)
 	case "daily":
 		c.dailyCommander.HandleCommand(msg, commandPath)
+	case "friday":
+		c.fridayCommander.HandleCommand(msg, commandPath)
+	case "asia":
+		c.asiaCommander.HandleCommand(msg, commandPath)
 	case "help":
 		c.demoCommander.HandleCommand(msg, commandPath)
 	case "user":
