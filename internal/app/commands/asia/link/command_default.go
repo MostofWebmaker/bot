@@ -1,9 +1,8 @@
 package link
 
 import (
-	"log"
-
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
+	"log"
 )
 
 func (c *AsiaLinkCommander) Default(inputMessage *tgbotapi.Message) {

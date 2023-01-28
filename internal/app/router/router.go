@@ -1,13 +1,13 @@
 package router
 
 import (
+	"github.com/MostofWebmaker/bot/internal/app/commands/asia"
+	"github.com/MostofWebmaker/bot/internal/app/commands/daily"
+	"github.com/MostofWebmaker/bot/internal/app/commands/demo"
+	"github.com/MostofWebmaker/bot/internal/app/commands/friday"
+	"github.com/MostofWebmaker/bot/internal/app/commands/team"
+	"github.com/MostofWebmaker/bot/internal/app/path"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
-	"github.com/ozonmp/omp-bot/internal/app/commands/asia"
-	"github.com/ozonmp/omp-bot/internal/app/commands/daily"
-	"github.com/ozonmp/omp-bot/internal/app/commands/demo"
-	"github.com/ozonmp/omp-bot/internal/app/commands/friday"
-	"github.com/ozonmp/omp-bot/internal/app/commands/team"
-	"github.com/ozonmp/omp-bot/internal/app/path"
 	"log"
 	"runtime/debug"
 )

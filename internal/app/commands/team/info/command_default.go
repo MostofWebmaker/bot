@@ -1,9 +1,8 @@
 package info
 
 import (
-	"log"
-
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
+	"log"
 )
 
 func (c *TeamInfoCommander) Default(inputMessage *tgbotapi.Message) {

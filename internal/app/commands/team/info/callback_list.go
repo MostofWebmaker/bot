@@ -3,8 +3,8 @@ package info
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/MostofWebmaker/bot/internal/app/path"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
-	"github.com/ozonmp/omp-bot/internal/app/path"
 	"log"
 )
 

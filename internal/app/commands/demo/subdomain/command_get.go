@@ -1,10 +1,9 @@
 package subdomain
 
 import (
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 	"log"
 	"strconv"
-
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 )
 
 func (c *DemoSubdomainCommander) Get(inputMessage *tgbotapi.Message) {

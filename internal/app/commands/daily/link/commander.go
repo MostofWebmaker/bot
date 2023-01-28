@@ -1,11 +1,10 @@
 package link
 
 import (
-	"github.com/ozonmp/omp-bot/internal/service/daily/link"
-	"log"
-
+	"github.com/MostofWebmaker/bot/internal/app/path"
+	"github.com/MostofWebmaker/bot/internal/service/daily/link"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
-	"github.com/ozonmp/omp-bot/internal/app/path"
+	"log"
 )
 
 type DailyLinkCommander struct {

@@ -1,11 +1,10 @@
 package demo
 
 import (
-	"log"
-
+	"github.com/MostofWebmaker/bot/internal/app/commands/demo/subdomain"
+	"github.com/MostofWebmaker/bot/internal/app/path"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
-	"github.com/ozonmp/omp-bot/internal/app/commands/demo/subdomain"
-	"github.com/ozonmp/omp-bot/internal/app/path"
+	"log"
 )
 
 type Commander interface {
