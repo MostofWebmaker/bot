@@ -32,7 +32,7 @@ func (c *LinkCommander) HandleCallback(callback *tgbotapi.CallbackQuery, callbac
 	case "link":
 		c.linkCommander.HandleCallback(callback, callbackPath)
 	default:
-		log.Printf("DemoCommander.HandleCallback: unknown subdomain - %s", callbackPath.Subdomain)
+		log.Printf("LinkCommander.HandleCallback: unknown subdomain - %s", callbackPath.Subdomain)
 	}
 }
 
@@ -41,6 +41,6 @@ func (c *LinkCommander) HandleCommand(msg *tgbotapi.Message, commandPath path.Co
 	case "link":
 		c.linkCommander.HandleCommand(msg, commandPath)
 	default:
-		log.Printf("DemoCommander.HandleCommand: unknown subdomain - %s", commandPath.Subdomain)
+		log.Printf("LinkCommander.HandleCommand: unknown subdomain - %s", commandPath.Subdomain)
 	}
 }

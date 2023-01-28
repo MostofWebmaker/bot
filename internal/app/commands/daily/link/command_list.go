@@ -16,10 +16,12 @@ func (c *DailyLinkCommander) List(inputMessage *tgbotapi.Message) {
 		outputMsgText += "\n"
 	}
 
+	count := len(products) + 1
+
 	msg := tgbotapi.NewMessage(inputMessage.Chat.ID, outputMsgText)
 
 	serializedData, _ := json.Marshal(CallbackListData{
-		Offset: 21,
+		Offset: count,
 	})
 
 	callbackPath := path.CallbackPath{

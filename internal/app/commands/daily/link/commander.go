@@ -40,6 +40,8 @@ func (c *DailyLinkCommander) HandleCommand(msg *tgbotapi.Message, commandPath pa
 		c.List(msg)
 	case "get":
 		c.Get(msg)
+	case "delete":
+		c.Delete(msg)
 	default:
 		c.Default(msg)
 	}

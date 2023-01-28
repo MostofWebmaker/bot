@@ -1,25 +1,27 @@
 package link
 
 import (
+	"fmt"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 	"log"
 	"strings"
 )
 
-func (c *DailyLinkCommander) Get(inputMessage *tgbotapi.Message) {
+func (c *DailyLinkCommander) Delete(inputMessage *tgbotapi.Message) {
 	args := inputMessage.CommandArguments()
 
 	stringArgs := strings.Split(args, " ")
-	LinkType := stringArgs[0]
-	product, err := c.linkService.Get(LinkType)
+	linkType := stringArgs[0]
+
+	//product, err := c.linkService.Get(LinkType)
+	_, err := c.linkService.Delete(linkType)
 	if err != nil {
-		log.Printf("fail to get product with LinkType %s: %v", LinkType, err)
 		return
 	}
 
 	msg := tgbotapi.NewMessage(
 		inputMessage.Chat.ID,
-		product.Http,
+		fmt.Sprintf("successfully deleted link with linkType = %s", linkType),
 	)
 
 	_, err = c.bot.Send(msg)

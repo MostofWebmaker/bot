@@ -9,7 +9,9 @@ import (
 	"github.com/MostofWebmaker/bot/internal/app/path"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 	"log"
+	"os"
 	"runtime/debug"
+	"strings"
 )
 
 type Commander interface {
@@ -94,12 +96,48 @@ func NewRouter(
 	}
 }
 
+func (c *Router) CheckAccess(update tgbotapi.Update) bool {
+	userName := update.Message.From.UserName
+	accessUsers, found := os.LookupEnv("ACCESS_USERS")
+	if !found {
+		log.Panic("environment variable ACCESS_USERS not found in .env")
+	}
+
+	accessList := strings.Split(accessUsers, ";")
+	access := false
+	for _, value := range accessList {
+		if value == userName {
+			access = true
+		}
+	}
+
+	if !access {
+		msg := tgbotapi.NewMessage(update.Message.Chat.ID,
+			"You don't have access to this bot! Go away, please.\n",
+		)
+
+		_, err := c.bot.Send(msg)
+		if err != nil {
+			log.Printf("TeamInfoCommander.Help: error sending reply message to chat - %v", err)
+		}
+		return access
+	}
+
+	return access
+}
+
 func (c *Router) HandleUpdate(update tgbotapi.Update) {
 	defer func() {
 		if panicValue := recover(); panicValue != nil {
 			log.Printf("recovered from panic: %v\n%v", panicValue, string(debug.Stack()))
 		}
 	}()
+
+	access := c.CheckAccess(update)
+
+	if !access {
+		return
+	}
 
 	switch {
 	case update.CallbackQuery != nil:
@@ -122,7 +160,7 @@ func (c *Router) handleCallback(callback *tgbotapi.CallbackQuery) {
 	case "team":
 		c.teamCommander.HandleCallback(callback, callbackPath)
 	case "daily":
-		c.teamCommander.HandleCallback(callback, callbackPath)
+		c.dailyCommander.HandleCallback(callback, callbackPath)
 	case "friday":
 		c.fridayCommander.HandleCallback(callback, callbackPath)
 	case "asia":
