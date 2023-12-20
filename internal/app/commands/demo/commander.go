@@ -21,8 +21,7 @@ func NewDemoCommander(
 	bot *tgbotapi.BotAPI,
 ) *DemoCommander {
 	return &DemoCommander{
-		bot: bot,
-		// subdomainCommander
+		bot:                bot,
 		subdomainCommander: subdomain.NewDemoSubdomainCommander(bot),
 	}
 }

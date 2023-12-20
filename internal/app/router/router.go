@@ -1,11 +1,8 @@
 package router
 
 import (
-	"github.com/MostofWebmaker/bot/internal/app/commands/asia"
-	"github.com/MostofWebmaker/bot/internal/app/commands/daily"
+	"github.com/MostofWebmaker/bot/internal/app/commands/check"
 	"github.com/MostofWebmaker/bot/internal/app/commands/demo"
-	"github.com/MostofWebmaker/bot/internal/app/commands/friday"
-	"github.com/MostofWebmaker/bot/internal/app/commands/team"
 	"github.com/MostofWebmaker/bot/internal/app/path"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 	"log"
@@ -21,39 +18,9 @@ type Commander interface {
 
 type Router struct {
 	// bot
-	bot *tgbotapi.BotAPI
-
-	// demoCommander
-	demoCommander   Commander
-	teamCommander   Commander
-	dailyCommander  Commander
-	fridayCommander Commander
-	asiaCommander   Commander
-	// user
-	// access
-	// buy
-	// delivery
-	// recommendation
-	// travel
-	// loyalty
-	// bank
-	// subscription
-	// license
-	// insurance
-	// payment
-	// storage
-	// streaming
-	// business
-	// work
-	// service
-	// exchange
-	// estate
-	// rating
-	// security
-	// cinema
-	// logistic
-	// product
-	// education
+	bot            *tgbotapi.BotAPI
+	demoCommander  Commander
+	checkCommander Commander
 }
 
 func NewRouter(
@@ -61,43 +28,18 @@ func NewRouter(
 ) *Router {
 	return &Router{
 		// bot
-		bot: bot,
-		// demoCommander
-		demoCommander:   demo.NewDemoCommander(bot),
-		teamCommander:   team.NewTeamInfoCommander(bot),
-		dailyCommander:  daily.NewDailyLinkCommander(bot),
-		fridayCommander: friday.NewFridayLinkCommander(bot),
-		asiaCommander:   asia.NewAsiaLinkCommander(bot),
-		// user
-		// access
-		// buy
-		// delivery
-		// recommendation
-		// travel
-		// loyalty
-		// bank
-		// subscription
-		// license
-		// insurance
-		// payment
-		// storage
-		// streaming
-		// business
-		// work
-		// service
-		// exchange
-		// estate
-		// rating
-		// security
-		// cinema
-		// logistic
-		// product
-		// education
+		bot:            bot,
+		demoCommander:  demo.NewDemoCommander(bot),
+		checkCommander: check.NewCheckCommander(bot),
 	}
 }
 
-func (c *Router) CheckAccess(update tgbotapi.Update) bool {
-	userName := update.Message.From.UserName
+func (c *Router) CheckAccess(user *tgbotapi.User) bool {
+	isBot := user.IsBot
+	if isBot {
+		return false
+	}
+	userName := user.UserName
 	accessUsers, found := os.LookupEnv("ACCESS_USERS")
 	if !found {
 		log.Panic("environment variable ACCESS_USERS not found in .env")
@@ -111,18 +53,6 @@ func (c *Router) CheckAccess(update tgbotapi.Update) bool {
 		}
 	}
 
-	if !access {
-		msg := tgbotapi.NewMessage(update.Message.Chat.ID,
-			"You don't have access to this bot! Go away, please.\n",
-		)
-
-		_, err := c.bot.Send(msg)
-		if err != nil {
-			log.Printf("TeamInfoCommander.Help: error sending reply message to chat - %v", err)
-		}
-		return access
-	}
-
 	return access
 }
 
@@ -133,9 +63,36 @@ func (c *Router) HandleUpdate(update tgbotapi.Update) {
 		}
 	}()
 
-	access := c.CheckAccess(update)
+	var user interface{}
+	if update.Message != nil {
+		user = update.Message.From
+	}
+
+	if update.CallbackQuery != nil {
+		user = update.CallbackQuery.From
+	}
+
+	if user == nil {
+		log.Panic("cannot get user")
+	}
+
+	gotUser, ok := user.(*tgbotapi.User)
+	if !ok {
+		log.Panic("cannot convert user")
+	}
+
+	access := c.CheckAccess(gotUser)
 
 	if !access {
+		msg := tgbotapi.NewMessage(update.Message.Chat.ID,
+			"You don't have access to this bot! Go away, please.\n",
+		)
+
+		_, err := c.bot.Send(msg)
+		if err != nil {
+			log.Printf("TeamInfoCommander.Help: error sending reply message to chat - %v", err)
+		}
+
 		return
 	}
 
@@ -157,64 +114,8 @@ func (c *Router) handleCallback(callback *tgbotapi.CallbackQuery) {
 	switch callbackPath.Domain {
 	case "demo":
 		c.demoCommander.HandleCallback(callback, callbackPath)
-	case "team":
-		c.teamCommander.HandleCallback(callback, callbackPath)
-	case "daily":
-		c.dailyCommander.HandleCallback(callback, callbackPath)
-	case "friday":
-		c.fridayCommander.HandleCallback(callback, callbackPath)
-	case "asia":
-		c.asiaCommander.HandleCallback(callback, callbackPath)
-	case "user":
-		break
-	case "access":
-		break
-	case "buy":
-		break
-	case "delivery":
-		break
-	case "recommendation":
-		break
-	case "travel":
-		break
-	case "loyalty":
-		break
-	case "bank":
-		break
-	case "subscription":
-		break
-	case "license":
-		break
-	case "insurance":
-		break
-	case "payment":
-		break
-	case "storage":
-		break
-	case "streaming":
-		break
-	case "business":
-		break
-	case "work":
-		break
-	case "service":
-		break
-	case "exchange":
-		break
-	case "estate":
-		break
-	case "rating":
-		break
-	case "security":
-		break
-	case "cinema":
-		break
-	case "logistic":
-		break
-	case "product":
-		break
-	case "education":
-		break
+	case "check":
+		c.checkCommander.HandleCallback(callback, callbackPath)
 	default:
 		log.Printf("Router.handleCallback: unknown domain - %s", callbackPath.Domain)
 	}
@@ -228,14 +129,6 @@ func (c *Router) handleMessage(msg *tgbotapi.Message) {
 	}
 
 	commandPath, err := path.ParseCommand(msg.Command())
-	//if commandPath.IsSimpleCommandPath() {
-	//	switch commandPath.CommandName {
-	//	case "help":
-	//		c.demoCommander.HandleCommand(msg, commandPath)
-	//	default:
-	//		log.Printf("Router.handleCallback: unknown domain - %s", commandPath.Domain)
-	//	}
-	//}
 	if err != nil {
 		log.Printf("Router.handleCallback: error parsing callback data `%s` - %v", msg.Command(), err)
 		return
@@ -244,73 +137,19 @@ func (c *Router) handleMessage(msg *tgbotapi.Message) {
 	switch commandPath.Domain {
 	case "demo":
 		c.demoCommander.HandleCommand(msg, commandPath)
-	case "team":
-		c.teamCommander.HandleCommand(msg, commandPath)
-	case "daily":
-		c.dailyCommander.HandleCommand(msg, commandPath)
-	case "friday":
-		c.fridayCommander.HandleCommand(msg, commandPath)
-	case "asia":
-		c.asiaCommander.HandleCommand(msg, commandPath)
 	case "help":
 		c.demoCommander.HandleCommand(msg, commandPath)
-	case "user":
-		break
-	case "access":
-		break
-	case "buy":
-		break
-	case "delivery":
-		break
-	case "recommendation":
-		break
-	case "travel":
-		break
-	case "loyalty":
-		break
-	case "bank":
-		break
-	case "subscription":
-		break
-	case "license":
-		break
-	case "insurance":
-		break
-	case "payment":
-		break
-	case "storage":
-		break
-	case "streaming":
-		break
-	case "business":
-		break
-	case "work":
-		break
-	case "service":
-		break
-	case "exchange":
-		break
-	case "estate":
-		break
-	case "rating":
-		break
-	case "security":
-		break
-	case "cinema":
-		break
-	case "logistic":
-		break
-	case "product":
-		break
-	case "education":
-		break
+	case "check":
+		c.checkCommander.HandleCommand(msg, commandPath)
+	//default:
+	//	log.Printf("Router.handleCallback: unknown domain - %s", commandPath.Domain)
 	default:
-		log.Printf("Router.handleCallback: unknown domain - %s", commandPath.Domain)
+		c.demoCommander.HandleCommand(msg, commandPath)
 	}
 }
 
 func (c *Router) showCommandFormat(inputMessage *tgbotapi.Message) {
-	outputMsg := tgbotapi.NewMessage(inputMessage.Chat.ID, "Command format: /{command}__{domain}__{subdomain}")
+	outputMsg := tgbotapi.NewMessage(inputMessage.Chat.ID, "Command format: /{command}_{company_name}_{track_no}")
 
 	_, err := c.bot.Send(outputMsg)
 	if err != nil {

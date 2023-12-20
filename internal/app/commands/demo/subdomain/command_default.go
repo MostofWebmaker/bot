@@ -8,7 +8,7 @@ import (
 func (c *DemoSubdomainCommander) Default(inputMessage *tgbotapi.Message) {
 	log.Printf("[%s] %s", inputMessage.From.UserName, inputMessage.Text)
 
-	msg := tgbotapi.NewMessage(inputMessage.Chat.ID, "You wrote: "+inputMessage.Text)
+	msg := tgbotapi.NewMessage(inputMessage.Chat.ID, "Undefined command name")
 
 	_, err := c.bot.Send(msg)
 	if err != nil {

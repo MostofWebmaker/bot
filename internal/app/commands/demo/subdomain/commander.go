@@ -34,6 +34,8 @@ func (c *DemoSubdomainCommander) HandleCallback(callback *tgbotapi.CallbackQuery
 
 func (c *DemoSubdomainCommander) HandleCommand(msg *tgbotapi.Message, commandPath path.CommandPath) {
 	switch commandPath.CommandName {
+	case "start":
+		c.Help(msg)
 	case "help":
 		c.Help(msg)
 	case "list":

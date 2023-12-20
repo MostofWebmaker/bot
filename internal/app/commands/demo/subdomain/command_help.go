@@ -5,13 +5,19 @@ import (
 	"log"
 )
 
+var numericKeyboard = tgbotapi.NewInlineKeyboardMarkup(
+	tgbotapi.NewInlineKeyboardRow(
+		tgbotapi.NewInlineKeyboardButtonData("Boxberry", "check_box_help"),
+		tgbotapi.NewInlineKeyboardButtonData("КСЕ", "check_kce_help"),
+		tgbotapi.NewInlineKeyboardButtonData("Почта России", "check_prf_help"),
+	),
+)
+
 func (c *DemoSubdomainCommander) Help(inputMessage *tgbotapi.Message) {
 	msg := tgbotapi.NewMessage(inputMessage.Chat.ID,
-		"/help__team__info - Team 15 info\n"+
-			"/get__daily__link - get link of daily meeting\n"+
-			"/get__friday__link - get link of results of week meeting\n"+
-			"/get__asia__link - get link of results of asia meeting",
+		"Выберите одну из доступных транспортных компаний:\n",
 	)
+	msg.ReplyMarkup = numericKeyboard
 
 	_, err := c.bot.Send(msg)
 	if err != nil {

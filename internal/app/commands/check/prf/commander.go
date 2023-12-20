@@ -1,0 +1,53 @@
+package prf
+
+import (
+	"github.com/MostofWebmaker/bot/internal/app/path"
+	"github.com/MostofWebmaker/bot/internal/service/cache"
+	"github.com/MostofWebmaker/bot/internal/service/check/prf"
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
+	"log"
+)
+
+const cacheKeyPrefix = "prf_"
+
+type CheckPRFCommander struct {
+	bot        *tgbotapi.BotAPI
+	prfService *prf.Service
+	c          *cache.Cache
+}
+
+func NewCheckPRFCommander(
+	bot *tgbotapi.BotAPI,
+) *CheckPRFCommander {
+	prfService := prf.NewService()
+
+	return &CheckPRFCommander{
+		bot:        bot,
+		prfService: prfService,
+		c:          cache.NewCache(),
+	}
+}
+
+func (c *CheckPRFCommander) HandleCallback(callback *tgbotapi.CallbackQuery, callbackPath path.CallbackPath) {
+	switch callbackPath.CallbackName {
+	case "help":
+		c.CallbackHelp(callback)
+	default:
+		log.Printf("CheckPRFCommander.HandleCallback: unknown callback name: %s", callbackPath.CallbackName)
+	}
+}
+
+func (c *CheckPRFCommander) HandleCommand(msg *tgbotapi.Message, commandPath path.CommandPath) {
+	switch commandPath.CommandName {
+	case "start":
+		c.Help(msg)
+	case "help":
+		c.Help(msg)
+	case "list":
+		c.List(msg)
+	case "by_id":
+		c.Check(msg)
+	default:
+		log.Printf("PRFCommander.HandleCommand: unknown command - %s", commandPath.Subdomain)
+	}
+}
