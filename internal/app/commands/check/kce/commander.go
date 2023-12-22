@@ -18,13 +18,14 @@ type CheckKCECommander struct {
 
 func NewCheckKCECommander(
 	bot *tgbotapi.BotAPI,
+	c *cache.Cache,
 ) *CheckKCECommander {
 	kceService := kce.NewService()
 
 	return &CheckKCECommander{
 		bot:        bot,
 		kceService: kceService,
-		c:          cache.NewCache(),
+		c:          c,
 	}
 }
 

@@ -18,13 +18,14 @@ type CheckPRFCommander struct {
 
 func NewCheckPRFCommander(
 	bot *tgbotapi.BotAPI,
+	c *cache.Cache,
 ) *CheckPRFCommander {
 	prfService := prf.NewService()
 
 	return &CheckPRFCommander{
 		bot:        bot,
 		prfService: prfService,
-		c:          cache.NewCache(),
+		c:          c,
 	}
 }
 

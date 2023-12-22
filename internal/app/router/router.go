@@ -4,6 +4,7 @@ import (
 	"github.com/MostofWebmaker/bot/internal/app/commands/check"
 	"github.com/MostofWebmaker/bot/internal/app/commands/demo"
 	"github.com/MostofWebmaker/bot/internal/app/path"
+	"github.com/MostofWebmaker/bot/internal/service/cache"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 	"log"
 	"os"
@@ -30,7 +31,7 @@ func NewRouter(
 		// bot
 		bot:            bot,
 		demoCommander:  demo.NewDemoCommander(bot),
-		checkCommander: check.NewCheckCommander(bot),
+		checkCommander: check.NewCheckCommander(bot, cache.NewCache()),
 	}
 }
 

@@ -18,13 +18,14 @@ type CheckBoxberryCommander struct {
 
 func NewCheckBoxberryCommander(
 	bot *tgbotapi.BotAPI,
+	c *cache.Cache,
 ) *CheckBoxberryCommander {
 	boxService := box.NewService()
 
 	return &CheckBoxberryCommander{
 		bot:        bot,
 		boxService: boxService,
-		c:          cache.NewCache(),
+		c:          c,
 	}
 }
 

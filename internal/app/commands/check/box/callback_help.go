@@ -10,7 +10,7 @@ type CallbackHelpData struct {
 }
 
 func (c *CheckBoxberryCommander) CallbackHelp(callback *tgbotapi.CallbackQuery) {
-	msgText := "Чтобы запросить статус по СДЭК выполните команду: \n" +
+	msgText := "Чтобы запросить статус по Boxberry выполните команду: \n" +
 		"/check_box_by_id {track_no}\n\n" +
 		"Вместо {track_no} необходимо вставить трек номер заказа."
 	msg := tgbotapi.NewMessage(
