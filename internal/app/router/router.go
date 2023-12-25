@@ -28,14 +28,13 @@ func NewRouter(
 	bot *tgbotapi.BotAPI,
 ) *Router {
 	return &Router{
-		// bot
 		bot:            bot,
 		demoCommander:  demo.NewDemoCommander(bot),
 		checkCommander: check.NewCheckCommander(bot, cache.NewCache()),
 	}
 }
 
-func (c *Router) CheckAccess(user *tgbotapi.User) bool {
+func (c *Router) checkAccess(user *tgbotapi.User) bool {
 	isBot := user.IsBot
 	if isBot {
 		return false
@@ -82,7 +81,7 @@ func (c *Router) HandleUpdate(update tgbotapi.Update) {
 		log.Panic("cannot convert user")
 	}
 
-	access := c.CheckAccess(gotUser)
+	access := c.checkAccess(gotUser)
 
 	if !access {
 		msg := tgbotapi.NewMessage(update.Message.Chat.ID,
@@ -142,8 +141,6 @@ func (c *Router) handleMessage(msg *tgbotapi.Message) {
 		c.demoCommander.HandleCommand(msg, commandPath)
 	case "check":
 		c.checkCommander.HandleCommand(msg, commandPath)
-	//default:
-	//	log.Printf("Router.handleCallback: unknown domain - %s", commandPath.Domain)
 	default:
 		c.demoCommander.HandleCommand(msg, commandPath)
 	}

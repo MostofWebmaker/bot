@@ -27,12 +27,7 @@ func NewDemoCommander(
 }
 
 func (c *DemoCommander) HandleCallback(callback *tgbotapi.CallbackQuery, callbackPath path.CallbackPath) {
-	switch callbackPath.Subdomain {
-	case "subdomain":
-		c.subdomainCommander.HandleCallback(callback, callbackPath)
-	default:
-		log.Printf("DemoCommander.HandleCallback: unknown subdomain - %s", callbackPath.Subdomain)
-	}
+	log.Printf("Method is not implemented!")
 }
 
 func (c *DemoCommander) HandleCommand(msg *tgbotapi.Message, commandPath path.CommandPath) {

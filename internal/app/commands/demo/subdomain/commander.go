@@ -2,34 +2,24 @@ package subdomain
 
 import (
 	"github.com/MostofWebmaker/bot/internal/app/path"
-	"github.com/MostofWebmaker/bot/internal/service/demo/subdomain"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 	"log"
 )
 
 type DemoSubdomainCommander struct {
-	bot              *tgbotapi.BotAPI
-	subdomainService *subdomain.Service
+	bot *tgbotapi.BotAPI
 }
 
 func NewDemoSubdomainCommander(
 	bot *tgbotapi.BotAPI,
 ) *DemoSubdomainCommander {
-	subdomainService := subdomain.NewService()
-
 	return &DemoSubdomainCommander{
-		bot:              bot,
-		subdomainService: subdomainService,
+		bot: bot,
 	}
 }
 
 func (c *DemoSubdomainCommander) HandleCallback(callback *tgbotapi.CallbackQuery, callbackPath path.CallbackPath) {
-	switch callbackPath.CallbackName {
-	case "list":
-		c.CallbackList(callback, callbackPath)
-	default:
-		log.Printf("DemoSubdomainCommander.HandleCallback: unknown callback name: %s", callbackPath.CallbackName)
-	}
+	log.Printf("Method is not implemented!")
 }
 
 func (c *DemoSubdomainCommander) HandleCommand(msg *tgbotapi.Message, commandPath path.CommandPath) {
@@ -38,10 +28,7 @@ func (c *DemoSubdomainCommander) HandleCommand(msg *tgbotapi.Message, commandPat
 		c.Help(msg)
 	case "help":
 		c.Help(msg)
-	case "list":
-		c.List(msg)
-	case "get":
-		c.Get(msg)
+
 	default:
 		c.Default(msg)
 	}

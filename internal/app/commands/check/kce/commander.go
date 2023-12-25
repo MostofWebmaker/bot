@@ -44,8 +44,6 @@ func (c *CheckKCECommander) HandleCommand(msg *tgbotapi.Message, commandPath pat
 		c.Help(msg)
 	case "help":
 		c.Help(msg)
-	case "list":
-		c.List(msg)
 	case "by_id":
 		c.Check(msg)
 	default:
