@@ -66,16 +66,19 @@ func (s *Service) Check(trackNo string) (*BoxInfo, error) {
 	fmt.Println("StatusCode", resp.StatusCode)
 
 	if resp.StatusCode == 200 {
-		respBody, err := io.ReadAll(resp.Body) // НЕЛЬЗЯ СЧИТЫВАТЬ БОЛЕЕ 1 РАЗА!
+		respBody, err := io.ReadAll(resp.Body)
 		if err != nil {
 			return nil, fmt.Errorf("ioutil.ReadAll: %w", err)
 		}
 
-		//	info := new(BoxInfo)
 		infoItems := make([]BoxInfo, 1)
 		err = json.Unmarshal(respBody, &infoItems)
 		if err != nil {
 			return nil, fmt.Errorf("json.Unmarshal: %w", err)
+		}
+		len := len(infoItems)
+		if len == 0 {
+			return nil, errProviderDataNotFound
 		}
 
 		info := infoItems[0]

@@ -18,19 +18,21 @@ type Commander interface {
 }
 
 type Router struct {
-	// bot
 	bot            *tgbotapi.BotAPI
 	demoCommander  Commander
 	checkCommander Commander
+	c              *cache.Cache
 }
 
 func NewRouter(
 	bot *tgbotapi.BotAPI,
 ) *Router {
+	c := cache.NewCache()
 	return &Router{
+		c:              c,
 		bot:            bot,
 		demoCommander:  demo.NewDemoCommander(bot),
-		checkCommander: check.NewCheckCommander(bot, cache.NewCache()),
+		checkCommander: check.NewCheckCommander(bot, c),
 	}
 }
 
@@ -85,7 +87,7 @@ func (c *Router) HandleUpdate(update tgbotapi.Update) {
 
 	if !access {
 		msg := tgbotapi.NewMessage(update.Message.Chat.ID,
-			"You don't have access to this bot! Go away, please.\n",
+			"У вас нет прав на пользование данным ботом, обратитесь к администратору.\n",
 		)
 
 		_, err := c.bot.Send(msg)
@@ -122,16 +124,32 @@ func (c *Router) handleCallback(callback *tgbotapi.CallbackQuery) {
 }
 
 func (c *Router) handleMessage(msg *tgbotapi.Message) {
+	var msgCommand, trackNo string
 	if !msg.IsCommand() {
-		c.showCommandFormat(msg)
+		cacheKey := msg.From.UserName + "check"
+		value, _ := c.c.Get(cacheKey)
+		if value != "" {
+			c.c.Remove(cacheKey)
+			trackNo = msg.Text
+			msg.Text = value + " " + trackNo
+			msgCommand = value[1:]
+		} else {
+			c.showCommandFormat(msg)
 
-		return
+			return
+		}
+	} else {
+		msgCommand = msg.Command()
 	}
 
-	commandPath, err := path.ParseCommand(msg.Command())
+	commandPath, err := path.ParseCommand(msgCommand)
 	if err != nil {
 		log.Printf("Router.handleCallback: error parsing callback data `%s` - %v", msg.Command(), err)
 		return
+	}
+
+	if trackNo != "" {
+		commandPath.Args = trackNo
 	}
 
 	switch commandPath.Domain {
@@ -147,7 +165,12 @@ func (c *Router) handleMessage(msg *tgbotapi.Message) {
 }
 
 func (c *Router) showCommandFormat(inputMessage *tgbotapi.Message) {
-	outputMsg := tgbotapi.NewMessage(inputMessage.Chat.ID, "Command format: /{command}_{company_name}_{track_no}")
+	outputMsg := tgbotapi.NewMessage(inputMessage.Chat.ID, "Command format: /{check}_{provider_name}_{by_id} {track_no}\n\n"+
+		"Вместо {provider_name} подставляем: \n"+
+		"Boxberry - box\n"+
+		"KCE - kce\n"+
+		"Почта России - prf\n\n"+
+		"Вместо {track_no} подставляем трек номер заказа\n")
 
 	_, err := c.bot.Send(outputMsg)
 	if err != nil {

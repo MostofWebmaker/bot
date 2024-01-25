@@ -52,6 +52,7 @@ func (c *CheckCommander) HandleCallback(callback *tgbotapi.CallbackQuery, callba
 }
 
 func (c *CheckCommander) HandleCommand(msg *tgbotapi.Message, commandPath path.CommandPath) {
+
 	switch commandPath.Subdomain {
 	case "kce":
 		c.KCECommander.HandleCommand(msg, commandPath)

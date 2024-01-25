@@ -10,12 +10,13 @@ type CommandPath struct {
 	CommandName string
 	Domain      string
 	Subdomain   string
+	Args        string
 }
 
 var ErrUnknownCommand = errors.New("unknown command")
 
-func ParseCommand(commandText string) (CommandPath, error) {
-	commandParts := strings.SplitN(commandText, "_", 3)
+func ParseCommand(msgText string) (CommandPath, error) {
+	commandParts := strings.SplitN(msgText, "_", 3)
 
 	l := len(commandParts)
 	if l == 0 {

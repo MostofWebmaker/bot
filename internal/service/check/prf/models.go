@@ -1,6 +1,7 @@
 package prf
 
 import (
+	"errors"
 	"fmt"
 	"log"
 )
@@ -12,6 +13,7 @@ var allEntities = []PRFInfo{
 	{Data: "four"},
 	{Data: "five"},
 }
+var errProviderDataNotFound = errors.New("У провайдера нет данных по данном трек номеру! Попробуйте проверить другой.")
 
 type PRFInfo struct {
 	DetailedTrackings []interface{}
@@ -103,11 +105,15 @@ func (s *PRFInfo) getMoney() string {
 	return fmt.Sprintf("%.0f", amountValue) + " " + currencyString
 }
 
-func (s *PRFInfo) GetData() string {
+func (s *PRFInfo) GetData() (string, error) {
+	if len(s.DetailedTrackings) == 0 {
+		fmt.Printf("we don't have response")
+		return "", errProviderDataNotFound
+	}
 	return s.getFieldString("mailType") + ": №" + s.getFieldString("barcode") + " " + s.getFieldStringFromFloat("weight") + "г" + " " + s.getMoney() + "\n" +
 		"Откуда: г. " + s.getFieldString("originCityName") + "\n" +
 		"Куда: г. " + s.getFieldString("destinationCityName") + "\n" +
 		"Отправитель: " + s.getFieldString("sender") + "\n" +
 		"Получатель: " + s.getFieldString("recipient") + "\n" +
-		"Статус доставки: " + s.getFieldString("commonStatus") + " " + s.getFieldString("lastOperationDateTime")
+		"Статус доставки: " + s.getFieldString("commonStatus") + " " + s.getFieldString("lastOperationDateTime"), nil
 }

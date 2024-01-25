@@ -56,7 +56,7 @@ func (s *Service) Check(trackNo string) (*KCEInfo, error) {
 
 	fmt.Println("StatusCode", resp.StatusCode)
 
-	respBody, err := io.ReadAll(resp.Body) // НЕЛЬЗЯ СЧИТЫВАТЬ БОЛЕЕ 1 РАЗА!
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, fmt.Errorf("ioutil.ReadAll: %w", err)
 	}

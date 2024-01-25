@@ -6,8 +6,8 @@ import (
 	"strings"
 )
 
-func (c *CheckPRFCommander) Check(inputMessage *tgbotapi.Message) {
-	preparedArgs := strings.Trim(inputMessage.CommandArguments(), " ")
+func (c *CheckPRFCommander) Check(args string, chatID int64) {
+	preparedArgs := strings.Trim(args, " ")
 	stringArgs := strings.Split(preparedArgs, " ")
 
 	l := len(stringArgs)
@@ -23,12 +23,12 @@ func (c *CheckPRFCommander) Check(inputMessage *tgbotapi.Message) {
 			if err != nil {
 				log.Fatal("something went wrong")
 			}
-			err = c.c.Set(cacheKeyPrefix+trackNo, prfInfo.GetData())
+			data, err = prfInfo.GetData()
 			if err != nil {
-				log.Fatal("got error on set cache value")
-				return
+				data = err.Error()
+			} else {
+				err = c.c.Set(cacheKeyPrefix+trackNo, data)
 			}
-			data = prfInfo.GetData()
 		} else {
 			log.Printf("successful got value by cache key `%s`", cacheKeyPrefix+trackNo)
 		}
@@ -36,12 +36,12 @@ func (c *CheckPRFCommander) Check(inputMessage *tgbotapi.Message) {
 	}
 
 	msg := tgbotapi.NewMessage(
-		inputMessage.Chat.ID,
+		chatID,
 		msgText,
 	)
 
 	_, err := c.bot.Send(msg)
 	if err != nil {
-		log.Printf("CheckKCECommander.Get: error sending reply message to chat - %v", err)
+		log.Printf("CheckKCECommander.Check: error sending reply message to chat - %v", err)
 	}
 }

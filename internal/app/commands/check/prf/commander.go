@@ -45,7 +45,13 @@ func (c *CheckPRFCommander) HandleCommand(msg *tgbotapi.Message, commandPath pat
 	case "help":
 		c.Help(msg)
 	case "by_id":
-		c.Check(msg)
+		var args string
+		if msg.CommandArguments() != "" {
+			args = msg.CommandArguments()
+		} else if commandPath.Args != "" {
+			args = commandPath.Args
+		}
+		c.Check(args, msg.Chat.ID)
 	default:
 		log.Printf("PRFCommander.HandleCommand: unknown command - %s", commandPath.Subdomain)
 	}

@@ -12,6 +12,6 @@ func (c *DemoSubdomainCommander) Default(inputMessage *tgbotapi.Message) {
 
 	_, err := c.bot.Send(msg)
 	if err != nil {
-		log.Printf("DemoSubdomainCommander.Help: error sending reply message to chat - %v", err)
+		log.Printf("DemoSubdomainCommander.Default: error sending reply message to chat - %v", err)
 	}
 }

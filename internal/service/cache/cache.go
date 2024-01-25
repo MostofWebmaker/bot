@@ -9,14 +9,11 @@ import (
 
 const invalidationTTL = time.Hour * 3
 
-//const invalidationTTL = time.Second * 15
-
 var errNotFound = errors.New("value not found")
 
 type Cache struct {
-	m           map[string]string
-	mu          sync.RWMutex
-	dateCreated time.Time
+	m  map[string]string
+	mu sync.RWMutex
 }
 
 func NewCache() *Cache {
@@ -57,4 +54,10 @@ func (c *Cache) Set(key, value string) error {
 	defer c.mu.Unlock()
 	c.m[key] = value
 	return nil
+}
+
+func (c *Cache) Remove(key string) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	delete(c.m, key)
 }

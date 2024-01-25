@@ -10,14 +10,19 @@ type CallbackHelpData struct {
 }
 
 func (c *CheckKCECommander) CallbackHelp(callback *tgbotapi.CallbackQuery) {
-	msgText := "Чтобы запросить статус заказа по KCE выполните команду: \n" +
-		"/check_kce_by_id {track_no}\n\n" +
-		"Вместо {track_no} необходимо вставить трек номер заказа."
+	msgText := "Вы выбрали провайдера KCE для проверки статуса заказа: \n\n" +
+		"Введите пожалуйста трек номер заказа:\n"
 	msg := tgbotapi.NewMessage(
 		callback.Message.Chat.ID,
 		msgText,
 	)
-	_, err := c.bot.Send(msg)
+
+	err := c.c.Set(callback.From.UserName+"check", "/check_kce_by_id")
+	if err != nil {
+		log.Printf("CheckKCECommander.CallbackHelp: error sending reply message to chat - %v", err)
+	}
+
+	_, err = c.bot.Send(msg)
 	if err != nil {
 		log.Printf("CheckKCECommander.CallbackHelp: error sending reply message to chat - %v", err)
 	}
