@@ -28,7 +28,7 @@ func main() {
 	log.Printf("Authorized on account %s", bot.Self.UserName)
 
 	u := tgbotapi.UpdateConfig{
-		Timeout: 60,
+		Timeout: 5,
 	}
 
 	updates, err := bot.GetUpdatesChan(u)

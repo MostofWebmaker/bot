@@ -32,10 +32,10 @@ func (s *Service) Get(idx int) (*PRFInfo, error) {
 }
 
 func (s *Service) Check(trackNo string) (*PRFInfo, error) {
-	httpClient := &http.Client{Timeout: 500 * time.Second}
+	httpClient := &http.Client{Timeout: 5 * time.Second}
 
 	ctx := context.Background()
-	ctx, cancel := context.WithTimeout(ctx, time.Second*100)
+	ctx, cancel := context.WithTimeout(ctx, time.Second*2)
 	defer cancel()
 
 	prfHostUrl, found := os.LookupEnv(prfHost)

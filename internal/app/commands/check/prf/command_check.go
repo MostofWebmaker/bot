@@ -13,7 +13,7 @@ func (c *CheckPRFCommander) Check(args string, chatID int64) {
 	l := len(stringArgs)
 	msgText := ""
 	if l == 0 {
-		msgText = "Track number is required! Please send with with track number."
+		msgText = "Трек номер обязателен для данной команды! Пожалуйста отправьте с трек номером."
 	} else {
 		trackNo := stringArgs[0]
 		data, err := c.c.Get(cacheKeyPrefix + trackNo)
@@ -21,11 +21,12 @@ func (c *CheckPRFCommander) Check(args string, chatID int64) {
 			log.Printf("cannot get value by cache key %s. Need to do http request", cacheKeyPrefix+trackNo)
 			prfInfo, err := c.prfService.Check(trackNo)
 			if err != nil {
-				log.Fatal("something went wrong")
+				log.Printf("got error from prf provider %s", err.Error())
 			}
 			data, err = prfInfo.GetData()
 			if err != nil {
-				data = err.Error()
+				log.Printf("got error in parsing data from prf provider %s", err.Error())
+				data = "К сожалению не удалось запросить данные от провайдера. Пожалуйста попробуйте еще раз позже."
 			} else {
 				err = c.c.Set(cacheKeyPrefix+trackNo, data)
 			}
@@ -42,6 +43,6 @@ func (c *CheckPRFCommander) Check(args string, chatID int64) {
 
 	_, err := c.bot.Send(msg)
 	if err != nil {
-		log.Printf("CheckKCECommander.Check: error sending reply message to chat - %v", err)
+		log.Printf("CheckPRFCommander.Check: error sending reply message to chat - %v", err)
 	}
 }
